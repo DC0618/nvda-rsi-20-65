@@ -108,38 +108,31 @@ You can change these in the scripts; keeping them in a small config block makes 
 
 ```mermaid
 flowchart TD
-  A[Start]
-  B{Mode?}
-  A --> B
+  A[Start] --> B{Mode?}
 
-  B -->|Backtest| C[Fetch recent 1m NVDA via yfinance]
-  B -->|Paper Trade| D[Fetch latest 1m NVDA via yfinance (loop)]
+  B -->|Backtest| C[Download NVDA 1m data]
+  B -->|Paper trade| D[Download NVDA 1m data (loop)]
 
-  %% Backtest branch
-  C --> E[Filter 09:30-16:00 ET<br/>Split by session/day]
-  E --> F[Compute RSI(14)]
-  F --> G{Signals<br/>RSI &lt; 20 => BUY<br/>RSI &gt; 65 => SELL}
-  G --> H[Risk mgmt<br/>~2% stop, no overlap]
-  H --> I[Log trades & P&amp;L]
-  I --> J[Per-day summary<br/>P&amp;L, win rate, drawdown]
-  J --> K[Write nvda_1m_backtest_trades.csv]
-  K --> L[Done (Backtest)]
+  C --> E[Filter 0930-1600 ET]
+  E --> F[Compute RSI 14]
+  F --> G{RSI<20 BUY; RSI>65 SELL}
+  G --> H[Risk management]
+  H --> I[Log trades and PnL]
+  I --> J[Write backtest CSV]
+  J --> K[Done backtest]
 
-  %% Paper-trading branch
-  D --> M[Filter 09:30-16:00 ET]
-  M --> N[Loop each minute]
-  N --> O[Compute RSI(14)]
-  O --> P{Signals<br/>RSI &lt; 20 => BUY<br/>RSI &gt; 65 => SELL}
-  P --> Q[Risk mgmt<br/>~2% stop, flat overnight]
-  Q --> R[Log paper trades]
-  R --> S[End of day]
-  S --> T{Any trades?}
-  T -->|Yes| U[Write nvda_1m_paper_trades.csv]
-  T -->|No| V[Write nvda_1m_today_summary.csv]
-  U --> W[Generate charts]
-  V --> W[Generate charts]
-  W --> X[Save PNGs: price & RSI]
-  X --> Y[Done (Paper)]
+  D --> L[Filter 0930-1600 ET]
+  L --> M[Compute RSI 14 per minute]
+  M --> N{RSI<20 BUY; RSI>65 SELL}
+  N --> O[Risk management]
+  O --> P[End of day]
+  P --> Q{Any trades?}
+  Q -->|Yes| R[Write paper trades CSV]
+  Q -->|No| S[Write daily summary CSV]
+  R --> T[Generate charts]
+  S --> T
+  T --> U[Done paper]
+
 ```
 
 ---
