@@ -108,30 +108,29 @@ You can change these in the scripts; keeping them in a small config block makes 
 
 ```mermaid
 flowchart TD
-  A[Start] --> B{Mode?}
+  A([Start]) --> B{Mode}
+  B -- Backtest --> C[Download 1m]
+  B -- Paper --> D[Download 1m loop]
 
-  B -->|Backtest| C[Download NVDA 1m data]
-  B -->|Paper trade| D[Download NVDA 1m data (loop)]
+  C --> E[Filter 0930-1600]
+  E --> F[RSI 14]
+  F --> G[Rules: buy<20 / sell>65]
+  G --> H[Risk]
+  H --> I[Backtest CSV]
+  I --> J([End backtest])
 
-  C --> E[Filter 0930-1600 ET]
-  E --> F[Compute RSI 14]
-  F --> G{RSI<20 BUY; RSI>65 SELL}
-  G --> H[Risk management]
-  H --> I[Log trades and PnL]
-  I --> J[Write backtest CSV]
-  J --> K[Done backtest]
+  D --> K[Filter 0930-1600]
+  K --> L[RSI 14 per min]
+  L --> M[Rules: buy<20 / sell>65]
+  M --> N[Risk]
+  N --> O[End of day]
+  O --> P{Any trades}
+  P -- Yes --> Q[Paper trades CSV]
+  P -- No --> R[Daily summary CSV]
+  Q --> S[Charts]
+  R --> S
+  S --> T([End paper])
 
-  D --> L[Filter 0930-1600 ET]
-  L --> M[Compute RSI 14 per minute]
-  M --> N{RSI<20 BUY; RSI>65 SELL}
-  N --> O[Risk management]
-  O --> P[End of day]
-  P --> Q{Any trades?}
-  Q -->|Yes| R[Write paper trades CSV]
-  Q -->|No| S[Write daily summary CSV]
-  R --> T[Generate charts]
-  S --> T
-  T --> U[Done paper]
 
 ```
 
