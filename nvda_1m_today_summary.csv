@@ -1,0 +1,2 @@
+date,min_RSI,max_RSI,hit_buy_threshold(<20),hit_sell_threshold(>65)
+2025-09-26,28.8,96.0,False,True
